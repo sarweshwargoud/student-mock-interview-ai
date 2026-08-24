@@ -8,7 +8,7 @@ const Footer = () => {
         {/* Copyright Section */}
         <div className="flex items-center text-sm">
           <CopyrightIcon className="mr-2 h-5 w-5 text-gray-400" />
-          <span>{new Date().getFullYear()} Interview Guru. All Rights Reserved.</span>
+          <span>{new Date().getFullYear()} Interview Guru. Created by Sarweshwar Buddolla. All Rights Reserved.</span>
         </div>
 
        

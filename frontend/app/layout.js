@@ -36,9 +36,9 @@ export const metadata = {
     'career development', 
     'job interview help'
   ],
-  authors: [{ name: 'Interview Guru Team' }],
-  creator: 'Interview Guru',
-  publisher: 'Interview Guru',
+  authors: [{ name: 'Sarweshwar Buddolla' }],
+  creator: 'Sarweshwar Buddolla',
+  publisher: 'Sarweshwar Buddolla',
   
   openGraph: {
     type: 'website',
