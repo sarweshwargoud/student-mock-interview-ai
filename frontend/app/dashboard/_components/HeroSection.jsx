@@ -22,11 +22,15 @@ export default function HeroSection() {
           <span>Next-Generation AI Interview Coaching</span>
         </div>
 
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-tight select-none">
-          Elevate Your Performance With <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 font-black block sm:inline drop-shadow-[0_0_30px_rgba(168,85,247,0.4)] animate-gradient-x">Interview Guru</span>
+        <h1 className="text-5xl sm:text-7xl md:text-8xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 tracking-tight leading-tight select-none drop-shadow-[0_0_40px_rgba(168,85,247,0.35)] animate-gradient-x mb-4">
+          Interview Guru
         </h1>
         
-        <p className="mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight mb-6">
+          Elevate Your Performance with AI Mock Interviews
+        </h2>
+        
+        <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
           Unlock your dream career. Elevate your performance by simulating mock interview sessions, receiving instant ratings, and mastering critical answer formatting with our advanced generative coach.
         </p>
 
