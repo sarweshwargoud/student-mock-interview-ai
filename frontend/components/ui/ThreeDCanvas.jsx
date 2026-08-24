@@ -113,10 +113,14 @@ export default function ThreeDCanvas() {
     window.addEventListener('mousemove', handleMouseMove)
     canvas.addEventListener('mouseleave', handleMouseLeave)
 
+    const startTime = Date.now()
+
     const render = () => {
       ctx.clearRect(0, 0, width, height)
 
-      const time = Date.now() * 0.001
+      // Use elapsed time from page load — avoids the cold-start over-rotation
+      // caused by raw Date.now() being a huge Unix timestamp
+      const time = (Date.now() - startTime) * 0.001
 
       // Auto-rotary movement + cursor control
       if (mouse.active) {
