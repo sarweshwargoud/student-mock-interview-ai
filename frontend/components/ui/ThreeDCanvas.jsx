@@ -15,30 +15,51 @@ export default function ThreeDCanvas() {
     let height = (canvas.height = canvas.offsetHeight)
 
     const particles = []
-    const particleCount = 100
-    const connectionDistance = 110
+    const rows = 18
+    const cols = 18
+    const spacingX = 70
+    const spacingZ = 70
+    const amplitude = 45 // Wave height
     const mouse = { x: 0, y: 0, targetX: 0, targetY: 0, active: false }
 
     class Particle {
-      constructor() {
-        const theta = Math.random() * Math.PI * 2
-        const phi = Math.acos(Math.random() * 2 - 1)
-        const radius = 100 + Math.random() * 150
-
-        this.x3d = radius * Math.sin(phi) * Math.cos(theta)
-        this.y3d = radius * Math.sin(phi) * Math.sin(theta)
-        this.z3d = radius * Math.cos(phi)
+      constructor(r, c) {
+        this.r = r
+        this.c = c
+        // Center the grid in 3D space
+        this.x3d = (c - cols / 2) * spacingX
+        this.z3d = (r - rows / 2) * spacingZ
+        this.y3d = 0
 
         this.x = 0
         this.y = 0
-        this.size = Math.random() * 2 + 1
-        this.color = `rgba(${99 + Math.random() * 50}, ${102 + Math.random() * 50}, 241, ${0.4 + Math.random() * 0.5})`
+        this.size = Math.random() * 3 + 2.5 // Enlarged size
+        this.color = `rgba(129, 140, 248, ${0.5 + Math.random() * 0.4})`
+      }
+
+      update(time) {
+        // Base sine wave motion
+        const distFromCenter = Math.sqrt(this.x3d * this.x3d + this.z3d * this.z3d)
+        this.y3d = Math.sin(distFromCenter * 0.004 - time * 2) * amplitude
+
+        // Interactive mouse distortion wave
+        if (mouse.active) {
+          const dx = this.x - (mouse.targetX + width / 2)
+          const dy = this.y - (mouse.targetY + height / 2)
+          const distToMouse = Math.sqrt(dx * dx + dy * dy)
+          if (distToMouse < 220) {
+            const force = (220 - distToMouse) / 220
+            this.y3d += Math.sin(distToMouse * 0.04 - time * 4) * amplitude * force * 1.8
+          }
+        }
       }
 
       project(angleX, angleY, fov, cx, cy) {
+        // Rotate around Y axis
         let x1 = this.x3d * Math.cos(angleY) - this.z3d * Math.sin(angleY)
         let z1 = this.x3d * Math.sin(angleY) + this.z3d * Math.cos(angleY)
 
+        // Rotate around X axis
         let y2 = this.y3d * Math.cos(angleX) - z1 * Math.sin(angleX)
         let z2 = this.y3d * Math.sin(angleX) + z1 * Math.cos(angleX)
 
@@ -50,6 +71,8 @@ export default function ThreeDCanvas() {
       }
 
       draw(ctx) {
+        // Fade out nodes far in the background
+        if (this.scale <= 0) return
         ctx.beginPath()
         ctx.arc(this.x, this.y, this.size * this.scale, 0, Math.PI * 2)
         ctx.fillStyle = this.color
@@ -57,14 +80,17 @@ export default function ThreeDCanvas() {
       }
     }
 
-    for (let i = 0; i < particleCount; i++) {
-      particles.push(new Particle())
+    // Initialize particles in a grid
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        particles.push(new Particle(r, c))
+      }
     }
 
-    let angleX = 0
+    let angleX = 0.4 // Start with tilted isometric view
     let angleY = 0
-    let targetAngleX = 0.002
-    let targetAngleY = 0.003
+    let targetAngleX = 0.4
+    let targetAngleY = 0
 
     const handleMouseMove = (e) => {
       const rect = canvas.getBoundingClientRect()
@@ -90,45 +116,70 @@ export default function ThreeDCanvas() {
     const render = () => {
       ctx.clearRect(0, 0, width, height)
 
+      const time = Date.now() * 0.001
+
       if (mouse.active) {
-        targetAngleY = (mouse.targetX / width) * 0.5
-        targetAngleX = (-mouse.targetY / height) * 0.5
+        targetAngleY = (mouse.targetX / width) * 0.6
+        targetAngleX = 0.4 + (-mouse.targetY / height) * 0.4
       } else {
-        targetAngleY += 0.001
-        targetAngleX += 0.0005
+        targetAngleY = time * 0.08
+        targetAngleX = 0.45 + Math.sin(time * 0.2) * 0.05
       }
 
       angleX += (targetAngleX - angleX) * 0.05
       angleY += (targetAngleY - angleY) * 0.05
 
-      const fov = 400
+      const fov = 500
       const cx = width / 2
       const cy = height / 2
 
-      particles.forEach((p) => p.project(angleX, angleY, fov, cx, cy))
+      // Update positions, wave dynamics, and project
+      particles.forEach((p) => {
+        p.update(time)
+        p.project(angleX, angleY, fov, cx, cy)
+      })
+
+      // Sort by depth for correct overlapping draw
       particles.sort((a, b) => b.depth - a.depth)
 
-      ctx.lineWidth = 0.5
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const p1 = particles[i]
-          const p2 = particles[j]
+      // Draw connection lines in a structured grid mesh
+      ctx.lineWidth = 0.7
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const idx = r * cols + c
+          const p1 = particles[idx]
+          if (!p1) continue
 
-          const dx = p1.x - p2.x
-          const dy = p1.y - p2.y
-          const dist = Math.sqrt(dx * dx + dy * dy)
-
-          if (dist < connectionDistance) {
-            const alpha = (1 - dist / connectionDistance) * 0.25 * p1.scale * p2.scale
-            ctx.strokeStyle = `rgba(129, 140, 248, ${alpha})`
-            ctx.beginPath()
-            ctx.moveTo(p1.x, p1.y)
-            ctx.lineTo(p2.x, p2.y)
-            ctx.stroke()
+          // Connect to right neighbor
+          if (c < cols - 1) {
+            const p2 = particles[idx + 1]
+            if (p2) drawConnection(p1, p2)
+          }
+          // Connect to bottom neighbor
+          if (r < rows - 1) {
+            const p2 = particles[idx + cols]
+            if (p2) drawConnection(p1, p2)
           }
         }
       }
 
+      function drawConnection(p1, p2) {
+        const dx = p1.x - p2.x
+        const dy = p1.y - p2.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+
+        // Prevent rendering lines across clipping boundaries
+        if (dist < 180 && p1.scale > 0 && p2.scale > 0) {
+          const alpha = (1 - dist / 180) * 0.3 * p1.scale * p2.scale
+          ctx.strokeStyle = `rgba(129, 140, 248, ${alpha})`
+          ctx.beginPath()
+          ctx.moveTo(p1.x, p1.y)
+          ctx.lineTo(p2.x, p2.y)
+          ctx.stroke()
+        }
+      }
+
+      // Draw particle nodes
       particles.forEach((p) => p.draw(ctx))
 
       animationFrameId = requestAnimationFrame(render)
@@ -150,7 +201,7 @@ export default function ThreeDCanvas() {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 h-full w-full pointer-events-none z-0"
-      style={{ opacity: 0.8 }}
+      style={{ opacity: 0.7 }}
     />
   )
 }
