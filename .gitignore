@@ -1,36 +1,15 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Root Git Ignore
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-.yarn/install-state.gz
+# Python virtual environments & build files
+backend/venv/
+backend/.env
+backend/__pycache__/
+backend/app/__pycache__/
+*.pyc
 
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env*.local
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Next.js and Node build folders
+frontend/node_modules/
+frontend/.next/
+frontend/.env*.local
+.next/
+node_modules/
