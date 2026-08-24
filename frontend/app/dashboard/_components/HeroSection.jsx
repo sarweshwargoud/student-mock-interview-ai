@@ -22,12 +22,12 @@ export default function HeroSection() {
           <span>Next-Generation AI Interview Coaching</span>
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-100 to-indigo-400 tracking-tight leading-tight sm:leading-none">
-          Elevate Your Performance With <span className="text-indigo-400 font-bold block sm:inline">Interview Guru</span>
+        <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-tight select-none">
+          Elevate Your Performance With <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 font-black block sm:inline drop-shadow-[0_0_30px_rgba(168,85,247,0.4)] animate-gradient-x">Interview Guru</span>
         </h1>
         
         <p className="mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-          Unlock your dream career. Double your interview performance with our advanced, real-time AI mock simulator tailored for your professional success.
+          Unlock your dream career. Elevate your performance by simulating mock interview sessions, receiving instant ratings, and mastering critical answer formatting with our advanced generative coach.
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -44,6 +44,22 @@ export default function HeroSection() {
           >
             How It Works
           </a>
+        </div>
+
+        {/* Trust Metrics / Additional Matter */}
+        <div className="mt-20 grid grid-cols-2 sm:grid-cols-3 gap-6 max-w-3xl mx-auto pt-10 border-t border-slate-900/60 relative z-10">
+          <div className="flex flex-col items-center">
+            <span className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">10k+</span>
+            <span className="text-slate-400 text-[10px] mt-1 uppercase tracking-widest font-bold">Mock Sessions Run</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">98%</span>
+            <span className="text-slate-400 text-[10px] mt-1 uppercase tracking-widest font-bold">Feedback Accuracy</span>
+          </div>
+          <div className="flex flex-col items-center col-span-2 sm:col-span-1">
+            <span className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-indigo-400">2.5x</span>
+            <span className="text-slate-400 text-[10px] mt-1 uppercase tracking-widest font-bold">Confidence Boost</span>
+          </div>
         </div>
       </div>
       
