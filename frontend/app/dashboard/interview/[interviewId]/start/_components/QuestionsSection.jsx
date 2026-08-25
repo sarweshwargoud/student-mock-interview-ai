@@ -44,16 +44,13 @@ const QuestionsSection = ({ mockInterviewQuestion, activeQuestionIndex }) => {
       />
 
       {/* Note box */}
-      <div className='border rounded-lg p-4 bg-blue-50'>
-        <h2 className='flex gap-2 items-center text-primary font-semibold mb-1'>
+      <div className='border border-indigo-500/20 rounded-xl p-4 bg-indigo-950/20'>
+        <h2 className='flex gap-2 items-center text-indigo-400 font-semibold mb-1 text-sm'>
           <Lightbulb className='w-4 h-4' />
-          Note:
+          Interview Tips &amp; Note:
         </h2>
-        <p className='text-sm text-primary leading-relaxed'>
-          Enable Video Web Cam and Microphone to Start your AI Generated Mock Interview.
-          It has 5 questions which you can answer and at last you will get a report based
-          on your answers. We never record your video — webcam access can be disabled
-          at any time.
+        <p className='text-xs text-slate-300 leading-relaxed'>
+          Enable your webcam and microphone to simulate real interview conditions. After recording or typing each response, remember to click <strong className="text-indigo-300">Save Answer for Evaluation</strong> to receive your AI rating and detailed constructive feedback at the end.
         </p>
       </div>
     </div>
