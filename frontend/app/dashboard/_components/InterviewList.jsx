@@ -3,6 +3,8 @@ import { useUser } from "@clerk/nextjs";
 import React, { useEffect, useState } from "react";
 import InterviewItemCard from "./InterviewItemCard"
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 const InterviewList = () => {
   const { user } = useUser();
   const [InterviewList, setInterviewList] = useState([]);
@@ -11,7 +13,7 @@ const InterviewList = () => {
   }, [user]);
   const GetInterviewList = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/interviews/user/${user?.primaryEmailAddress?.emailAddress}`);
+      const response = await fetch(`${API_URL}/api/interviews/user/${user?.primaryEmailAddress?.emailAddress}`);
       if (response.ok) {
         const data = await response.json();
         setInterviewList(data);

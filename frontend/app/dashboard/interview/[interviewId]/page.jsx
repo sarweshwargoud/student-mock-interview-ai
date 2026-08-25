@@ -6,6 +6,8 @@ import React, { useEffect, useState } from "react";
 import Webcam from "react-webcam";
 import { toast } from "sonner";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 function Interview({ params }) {
   const [interviewData, setInterviewData] = useState(null);
   const [webCamEnabled, setWebCamEnabled] = useState(false);
@@ -16,7 +18,7 @@ function Interview({ params }) {
 
   const GetInterviewDetails = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/interviews/${params.interviewId}`);
+      const response = await fetch(`${API_URL}/api/interviews/${params.interviewId}`);
       if (response.ok) {
         const data = await response.json();
         setInterviewData(data);

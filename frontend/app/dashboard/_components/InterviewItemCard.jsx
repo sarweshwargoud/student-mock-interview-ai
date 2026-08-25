@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Trash } from "lucide-react";
 import { toast } from "sonner";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 const InterviewItemCard = ({ interview }) => {
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -18,7 +20,7 @@ const InterviewItemCard = ({ interview }) => {
 
   const onDelete = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/interviews/${interview?.mockId}`, {
+      const response = await fetch(`${API_URL}/api/interviews/${interview?.mockId}`, {
         method: "DELETE"
       });
       

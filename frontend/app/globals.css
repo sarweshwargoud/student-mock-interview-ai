@@ -97,3 +97,38 @@ body {
 .animate-gradient-x {
   animation: gradient-x 8s ease infinite;
 }
+
+/* ── Scroll-reveal base states ───────────────────────────────────────────── */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-56px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(56px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Triggered state (added by IntersectionObserver) ─────────────────────── */
+.scroll-revealed {
+  opacity: 1 !important;
+  transform: translate(0, 0) !important;
+}
+
+/* ── Stagger delay helpers ───────────────────────────────────────────────── */
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
+.delay-400 { transition-delay: 400ms; }
+.delay-500 { transition-delay: 500ms; }

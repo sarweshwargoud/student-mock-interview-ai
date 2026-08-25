@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 const StartInterview = ({ params }) => {
   const [interViewData, setInterviewData] = useState();
   const [mockInterviewQuestion, setMockInterviewQuestion] = useState();
@@ -19,7 +21,7 @@ const StartInterview = ({ params }) => {
   const GetInterviewDetails = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`http://localhost:8000/api/interviews/${params.interviewId}`);
+      const response = await fetch(`${API_URL}/api/interviews/${params.interviewId}`);
       if (response.ok) {
         const data = await response.json();
         const jsonMockResp = JSON.parse(data.jsonMockResp);
@@ -34,8 +36,6 @@ const StartInterview = ({ params }) => {
   };
 
   const handleAnswerSave = (answerRecord) => {
-    // Optional: Add any additional logic when an answer is saved
-    // For example, you might want to automatically move to the next question
     if (activeQuestionIndex < mockInterviewQuestion.length - 1) {
       setActiveQuestionIndex(prev => prev + 1);
     }
@@ -61,33 +61,38 @@ const StartInterview = ({ params }) => {
   }
 
   return (
-    <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-        {/* Questions */}
-        <QuestionsSection
-          mockInterviewQuestion={mockInterviewQuestion}
-          activeQuestionIndex={activeQuestionIndex}
-        />
-        {/* video or audio recording */}
-        <RecordAnswerSection
-          mockInterviewQuestion={mockInterviewQuestion}
-          activeQuestionIndex={activeQuestionIndex}
-          interviewData={interViewData}
-          onAnswerSave={handleAnswerSave}
-        />
+    <div className="flex flex-col h-[calc(100vh-6rem)]">
+      {/* Two-column panel — fills remaining viewport height */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 overflow-hidden">
+        <div className="overflow-y-auto">
+          <QuestionsSection
+            mockInterviewQuestion={mockInterviewQuestion}
+            activeQuestionIndex={activeQuestionIndex}
+          />
+        </div>
+        <div className="overflow-y-auto">
+          <RecordAnswerSection
+            mockInterviewQuestion={mockInterviewQuestion}
+            activeQuestionIndex={activeQuestionIndex}
+            interviewData={interViewData}
+            onAnswerSave={handleAnswerSave}
+          />
+        </div>
       </div>
-      <div className="flex justify-end gap-6">
+
+      {/* Navigation bar pinned at bottom */}
+      <div className="flex justify-end gap-4 py-3 border-t bg-background shrink-0">
         {activeQuestionIndex > 0 && (
           <Button onClick={() => setActiveQuestionIndex(activeQuestionIndex - 1)}>
             Previous Question
           </Button>
         )}
-        {activeQuestionIndex != mockInterviewQuestion?.length - 1 && (
+        {activeQuestionIndex !== mockInterviewQuestion?.length - 1 && (
           <Button onClick={() => setActiveQuestionIndex(activeQuestionIndex + 1)}>
             Next Question
           </Button>
         )}
-        {activeQuestionIndex == mockInterviewQuestion?.length - 1 && (
+        {activeQuestionIndex === mockInterviewQuestion?.length - 1 && (
           <Link href={'/dashboard/interview/' + interViewData?.mockId + '/feedback'}>
             <Button>End Interview</Button>
           </Link>

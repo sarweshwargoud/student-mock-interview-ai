@@ -15,6 +15,8 @@ import {
 import AddNewInterview from './_components/AddNewInterview'
 import InterviewList from './_components/InterviewList'
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 function Dashboard() {
   const { user } = useUser();
   const [interviewData, setInterviewData] = useState([]);
@@ -44,7 +46,7 @@ function Dashboard() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/answers/user/${user.primaryEmailAddress.emailAddress}`);
+      const response = await fetch(`${API_URL}/api/answers/user/${user.primaryEmailAddress.emailAddress}`);
   
       if (!response.ok) {
         throw new Error('Failed to fetch interview data');

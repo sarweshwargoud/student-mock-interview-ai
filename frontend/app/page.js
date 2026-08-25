@@ -10,14 +10,13 @@ import {
   Award, 
   Brain,
   ArrowRight,
-  Sparkles,
   Zap,
   TrendingUp,
   Cpu
 } from 'lucide-react'
-import Link from 'next/link'
 import HeroSection from './dashboard/_components/HeroSection'
 import TiltCard from '../components/ui/TiltCard'
+import { useScrollReveal } from '../components/ui/useScrollReveal'
 
 const ResourceCard = ({ icon, title, description, links }) => (
   <TiltCard className="flex flex-col h-full bg-slate-900/40 border-slate-800 hover:border-indigo-500/40 transition-all duration-300">
@@ -50,6 +49,33 @@ const ResourceCard = ({ icon, title, description, links }) => (
 export default function ResourcesPage() {
   const [activeCategory, setActiveCategory] = useState('tech')
 
+  // ── Scroll-reveal refs ──────────────────────────────────────────────────
+  // "Powered by Generative Intelligence" section
+  const valuePropHeading = useScrollReveal()
+  const featureCard0     = useScrollReveal()
+  const featureCard1     = useScrollReveal()
+  const featureCard2     = useScrollReveal()
+
+  // "B.Tech Interview & Placement Assets" section
+  const resourcesHeading = useScrollReveal()
+  const resourcesTabs    = useScrollReveal()
+  const resourcesGrid    = useScrollReveal()
+
+  // "Accelerate Your Preparation" section
+  const accelHeading     = useScrollReveal()
+  const accelCard0       = useScrollReveal()
+  const accelCard1       = useScrollReveal()
+  const accelCard2       = useScrollReveal()
+  // ────────────────────────────────────────────────────────────────────────
+
+  const featureRefs  = [featureCard0, featureCard1, featureCard2]
+  const featureDir   = ['reveal-left', 'reveal-up',   'reveal-right']
+  const featureDelay = ['delay-100',   'delay-300',   'delay-500']
+
+  const accelRefs  = [accelCard0, accelCard1, accelCard2]
+  const accelDir   = ['reveal-left', 'reveal-up',   'reveal-right']
+  const accelDelay = ['delay-100',   'delay-300',   'delay-500']
+
   const resourceCategories = {
     tech: {
       icon: <Code className="w-6 h-6" />,
@@ -60,9 +86,9 @@ export default function ResourcesPage() {
           icon: <Code className="w-6 h-6" />,
           links: [
             { name: "GeeksforGeeks", url: "https://www.geeksforgeeks.org/" },
-            { name: "LeetCode", url: "https://leetcode.com/" },
-            { name: "HackerRank", url: "https://www.hackerrank.com/" },
-            { name: "CodeChef", url: "https://www.codechef.com/" }
+            { name: "LeetCode",      url: "https://leetcode.com/" },
+            { name: "HackerRank",    url: "https://www.hackerrank.com/" },
+            { name: "CodeChef",      url: "https://www.codechef.com/" }
           ]
         },
         {
@@ -70,9 +96,9 @@ export default function ResourcesPage() {
           description: "Review system design architectures and solve technical interview puzzles.",
           icon: <Target className="w-6 h-6" />,
           links: [
-            { name: "InterviewBit", url: "https://www.interviewbit.com/" },
+            { name: "InterviewBit",         url: "https://www.interviewbit.com/" },
             { name: "System Design Primer", url: "https://github.com/donnemartin/system-design-primer" },
-            { name: "Pramp", url: "https://www.pramp.com/" }
+            { name: "Pramp",                url: "https://www.pramp.com/" }
           ]
         }
       ]
@@ -85,9 +111,9 @@ export default function ResourcesPage() {
           description: "Excel in quantitative aptitude, logical deduction, and verbal reasoning modules.",
           icon: <PenTool className="w-6 h-6" />,
           links: [
-            { name: "IndiaBix", url: "https://www.indiabix.com/" },
+            { name: "IndiaBix",              url: "https://www.indiabix.com/" },
             { name: "Freshersworld Aptitude", url: "https://www.freshersworld.com/aptitude-questions" },
-            { name: "MathsGuru Reasoning", url: "https://www.mathsguru.com/reasoning-questions/" }
+            { name: "MathsGuru Reasoning",   url: "https://www.mathsguru.com/reasoning-questions/" }
           ]
         },
         {
@@ -96,7 +122,7 @@ export default function ResourcesPage() {
           icon: <Award className="w-6 h-6" />,
           links: [
             { name: "GATE Overflow", url: "https://gateoverflow.in/" },
-            { name: "Career Power", url: "https://careerpower.in/" },
+            { name: "Career Power",  url: "https://careerpower.in/" },
             { name: "Brilliant.org", url: "https://brilliant.org/" }
           ]
         }
@@ -110,7 +136,7 @@ export default function ResourcesPage() {
           description: "Learn interview frameworks, behavioral rules, and study placement patterns.",
           icon: <Book className="w-6 h-6" />,
           links: [
-            { name: "Insider Tips", url: "https://www.ambitionbox.com/" },
+            { name: "Insider Tips",    url: "https://www.ambitionbox.com/" },
             { name: "InterviewStreet", url: "https://www.interviewstreet.com/" },
             { name: "Career Guidance", url: "https://www.shiksha.com/" }
           ]
@@ -121,8 +147,8 @@ export default function ResourcesPage() {
           icon: <Globe className="w-6 h-6" />,
           links: [
             { name: "Coursera", url: "https://www.coursera.org/" },
-            { name: "edX", url: "https://www.edx.org/" },
-            { name: "Udacity", url: "https://www.udacity.com/" }
+            { name: "edX",      url: "https://www.edx.org/" },
+            { name: "Udacity",  url: "https://www.udacity.com/" }
           ]
         }
       ]
@@ -151,11 +177,15 @@ export default function ResourcesPage() {
     <div className="bg-slate-950 text-slate-100 min-h-screen">
       <HeroSection />
 
-      {/* Value Prop Section */}
+      {/* ── Powered by Generative Intelligence ────────────────────────── */}
       <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-900 bg-slate-950/40 relative">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
-        
-        <div className="text-center mb-16 space-y-4 relative z-10">
+
+        {/* Heading slides up */}
+        <div
+          ref={valuePropHeading}
+          className="text-center mb-16 space-y-4 relative z-10 reveal-up"
+        >
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
             Powered by Generative Intelligence
           </h2>
@@ -164,36 +194,48 @@ export default function ResourcesPage() {
           </p>
         </div>
 
+        {/* Feature cards slide in from left / up / right */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
           {features.map((feature, idx) => (
-            <TiltCard 
-              key={idx} 
-              className="bg-slate-900/30 border-slate-800/80 hover:border-indigo-500/30 p-8 flex flex-col items-center text-center rounded-2xl"
+            <div
+              key={idx}
+              ref={featureRefs[idx]}
+              className={`${featureDir[idx]} ${featureDelay[idx]}`}
             >
-              <div className="p-4 bg-indigo-950/50 border border-indigo-500/20 rounded-2xl mb-6 text-indigo-400">
-                {feature.icon}
-              </div>
-              <h3 className="text-xl font-bold text-slate-100 mb-3">{feature.title}</h3>
-              <p className="text-slate-400 leading-relaxed text-sm">{feature.description}</p>
-            </TiltCard>
+              <TiltCard className="bg-slate-900/30 border-slate-800/80 hover:border-indigo-500/30 p-8 flex flex-col items-center text-center rounded-2xl h-full">
+                <div className="p-4 bg-indigo-950/50 border border-indigo-500/20 rounded-2xl mb-6 text-indigo-400">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold text-slate-100 mb-3">{feature.title}</h3>
+                <p className="text-slate-400 leading-relaxed text-sm">{feature.description}</p>
+              </TiltCard>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* Resources Explorer */}
+      {/* ── B.Tech Interview & Placement Assets ───────────────────────── */}
       <section className="py-24 bg-slate-900/20 border-t border-slate-900 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16 space-y-4">
+
+          {/* Heading slides up */}
+          <div
+            ref={resourcesHeading}
+            className="text-center mb-16 space-y-4 reveal-up"
+          >
             <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
-              B.Tech Interview & Placement Assets
+              B.Tech Interview &amp; Placement Assets
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto text-lg">
               Explore curated roadmaps and external preparation tools to support your academic and professional placement.
             </p>
           </div>
 
-          {/* Navigation Tabs */}
-          <div className="flex flex-wrap justify-center mb-12 gap-3">
+          {/* Tabs slide up with slight delay */}
+          <div
+            ref={resourcesTabs}
+            className="flex flex-wrap justify-center mb-12 gap-3 reveal-up delay-200"
+          >
             {Object.keys(resourceCategories).map((category) => (
               <button
                 key={category}
@@ -209,8 +251,11 @@ export default function ResourcesPage() {
             ))}
           </div>
 
-          {/* Resources Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Resources grid slides up */}
+          <div
+            ref={resourcesGrid}
+            className="grid grid-cols-1 md:grid-cols-2 gap-8 reveal-up delay-400"
+          >
             {resourceCategories[activeCategory].resources.map((resource, index) => (
               <ResourceCard key={index} {...resource} />
             ))}
@@ -218,13 +263,17 @@ export default function ResourcesPage() {
         </div>
       </section>
 
-      {/* Extra Tips / Standout Sections */}
+      {/* ── Accelerate Your Preparation ───────────────────────────────── */}
       <section className="py-24 border-t border-slate-900 bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-indigo-950/30 to-purple-950/20 border border-slate-800/80 rounded-3xl p-8 md:p-16 relative overflow-hidden">
             <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-            
-            <div className="text-center mb-16 relative z-10 max-w-2xl mx-auto">
+
+            {/* Heading slides up */}
+            <div
+              ref={accelHeading}
+              className="text-center mb-16 relative z-10 max-w-2xl mx-auto reveal-up"
+            >
               <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
                 Accelerate Your Preparation
               </h2>
@@ -233,6 +282,7 @@ export default function ResourcesPage() {
               </p>
             </div>
 
+            {/* Tip cards slide in from left / up / right */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
               {[
                 {
@@ -254,23 +304,26 @@ export default function ResourcesPage() {
                   url: "https://www.skillvalue.com/"
                 }
               ].map((tip, index) => (
-                <TiltCard 
-                  key={index} 
-                  className="bg-slate-950/60 border-slate-800/60 p-6 flex flex-col justify-between"
+                <div
+                  key={index}
+                  ref={accelRefs[index]}
+                  className={`${accelDir[index]} ${accelDelay[index]}`}
                 >
-                  <div>
-                    <div className="mb-4 text-indigo-400">{tip.icon}</div>
-                    <h3 className="text-lg font-bold mb-2">{tip.title}</h3>
-                    <p className="text-slate-400 text-sm leading-relaxed mb-6">{tip.description}</p>
-                  </div>
-                  <a
-                    href={tip.url}
-                    className="inline-flex items-center text-sm font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
-                  >
-                    Launch Platform
-                    <ArrowRight className="ml-1 w-4 h-4" />
-                  </a>
-                </TiltCard>
+                  <TiltCard className="bg-slate-950/60 border-slate-800/60 p-6 flex flex-col justify-between h-full">
+                    <div>
+                      <div className="mb-4 text-indigo-400">{tip.icon}</div>
+                      <h3 className="text-lg font-bold mb-2">{tip.title}</h3>
+                      <p className="text-slate-400 text-sm leading-relaxed mb-6">{tip.description}</p>
+                    </div>
+                    <a
+                      href={tip.url}
+                      className="inline-flex items-center text-sm font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+                    >
+                      Launch Platform
+                      <ArrowRight className="ml-1 w-4 h-4" />
+                    </a>
+                  </TiltCard>
+                </div>
               ))}
             </div>
           </div>

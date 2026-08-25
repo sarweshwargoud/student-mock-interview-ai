@@ -1,36 +1,63 @@
 "use client"
 import { Lightbulb, Volume2 } from 'lucide-react'
 import React from 'react'
-const QuestionsSection = ({mockInterviewQuestion,activeQuestionIndex}) => {
-  console.log("🚀 ~ file: QuestionsSection.jsx:4 ~ QuestionsSection ~ mockInterviewQuestion:", mockInterviewQuestion);
-  const textToSpeach=(text)=>{
-if('speechSynthesis' in window){
-    const speech = new SpeechSynthesisUtterance(text);
-    window.speechSynthesis.speak(speech)
-}else{
-    alert("Sorry, your browser does not support text to speech")
-}
-  }
-  return mockInterviewQuestion && (
-    <div className='p-5 border rounded-lg my-10'>
-        <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5'>
-            {mockInterviewQuestion && mockInterviewQuestion.map((question,index)=>(
-                <h2 className={`p-2 bg-secondary rounded-full text-xs md:text-sm text-center cursor-pointer ${activeQuestionIndex == index && 'bg-blue-700 text-white'}`}>Question #{index+1}</h2>
-            ))}
-        </div>
-            <h2 className='my-5 text-md md:text-lg'>
-                {mockInterviewQuestion[activeQuestionIndex]?.question}
-            </h2>
-            <Volume2 className='cursor-pointer' onClick={()=>textToSpeach(mockInterviewQuestion[activeQuestionIndex]?.question)}/>
-            <div className='border rounded-lg p-5 bg-blue-100 mt-20'>
-                <h2 className='flex gap-2 items-center text-primary'>
-                    <Lightbulb/>
-                    <strong>Note:</strong>
-                </h2>
-                <h2 className='text-sm text-primary my-2'>Enable Video Web Cam and Microphone to Start your AI Generated Mock Interview, It Has 5 questions which you can answer and at last you will get the report on the basis of your answer . NOTE: We never record your video, Web cam access you can disable at any time if you want</h2>
-            </div>
-    </div>
-  )
-}
 
-export default QuestionsSection
+const QuestionsSection = ({ mockInterviewQuestion, activeQuestionIndex }) => {
+  console.log("🚀 ~ QuestionsSection ~ mockInterviewQuestion:", mockInterviewQuestion);
+
+  const textToSpeach = (text) => {
+    if ('speechSynthesis' in window) {
+      const speech = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(speech);
+    } else {
+      alert("Sorry, your browser does not support text to speech");
+    }
+  };
+
+  return mockInterviewQuestion && (
+    <div className='p-5 border rounded-lg mt-4'>
+      {/* Question number tabs */}
+      <div className='flex flex-wrap gap-2 mb-4'>
+        {mockInterviewQuestion.map((question, index) => (
+          <span
+            key={index}
+            className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer border transition-colors
+              ${activeQuestionIndex === index
+                ? 'bg-blue-600 text-white border-blue-600'
+                : 'bg-secondary text-foreground border-border'
+              }`}
+          >
+            Question #{index + 1}
+          </span>
+        ))}
+      </div>
+
+      {/* Active question text */}
+      <p className='text-base md:text-lg font-medium leading-relaxed mb-3'>
+        {mockInterviewQuestion[activeQuestionIndex]?.question}
+      </p>
+
+      {/* Text-to-speech button */}
+      <Volume2
+        className='cursor-pointer mb-5 text-gray-500 hover:text-primary transition-colors'
+        onClick={() => textToSpeach(mockInterviewQuestion[activeQuestionIndex]?.question)}
+      />
+
+      {/* Note box */}
+      <div className='border rounded-lg p-4 bg-blue-50'>
+        <h2 className='flex gap-2 items-center text-primary font-semibold mb-1'>
+          <Lightbulb className='w-4 h-4' />
+          Note:
+        </h2>
+        <p className='text-sm text-primary leading-relaxed'>
+          Enable Video Web Cam and Microphone to Start your AI Generated Mock Interview.
+          It has 5 questions which you can answer and at last you will get a report based
+          on your answers. We never record your video — webcam access can be disabled
+          at any time.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default QuestionsSection;

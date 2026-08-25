@@ -5,6 +5,8 @@ import { Mic, StopCircle, Loader2, Camera, CameraOff } from "lucide-react";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 const RecordAnswerSection = ({ 
   mockInterviewQuestion, 
   activeQuestionIndex, 
@@ -20,7 +22,6 @@ const RecordAnswerSection = ({
   const webcamRef = useRef(null);
 
   useEffect(() => {
-    // Speech recognition setup (previous code remains the same)
     if (typeof window !== "undefined" && 'webkitSpeechRecognition' in window) {
       recognitionRef.current = new window.webkitSpeechRecognition();
       const recognition = recognitionRef.current;
@@ -36,7 +37,6 @@ const RecordAnswerSection = ({
             finalTranscript += event.results[i][0].transcript + ' ';
           }
         }
-
         if (finalTranscript.trim()) {
           setUserAnswer(prev => (prev + ' ' + finalTranscript).trim());
         }
@@ -76,12 +76,10 @@ const RecordAnswerSection = ({
   };
 
   const StartStopRecording = () => {
-    // (previous recording logic remains the same)
     if (!recognitionRef.current) {
       toast.error("Speech-to-text not supported");
       return;
     }
-
     if (isRecording) {
       recognitionRef.current.stop();
       toast.info("Recording stopped");
@@ -101,11 +99,9 @@ const RecordAnswerSection = ({
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/answers", {
+      const response = await fetch(`${API_URL}/api/answers`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           mockIdRef: interviewData?.mockId,
           question: mockInterviewQuestion[activeQuestionIndex]?.question,
@@ -118,20 +114,15 @@ const RecordAnswerSection = ({
       if (response.ok) {
         const answerRecord = await response.json();
         onAnswerSave?.(answerRecord);
-
         toast.success("Answer recorded successfully");
         setUserAnswer("");
-        if (recognitionRef.current) {
-          recognitionRef.current.stop();
-        }
+        if (recognitionRef.current) recognitionRef.current.stop();
         setIsRecording(false);
       } else {
         throw new Error("Failed to save answer to backend");
       }
     } catch (error) {
-      toast.error("Failed to save answer", {
-        description: error.message
-      });
+      toast.error("Failed to save answer", { description: error.message });
       console.error("Answer save error:", error);
     } finally {
       setLoading(false);
@@ -139,72 +130,75 @@ const RecordAnswerSection = ({
   };
 
   return (
-    <div className="flex justify-center items-center flex-col relative">
+    <div className="flex flex-col gap-4 p-4 mt-4">
+      {/* Full-screen loading overlay */}
       {loading && (
         <div className="fixed inset-0 bg-black/70 z-[9999] flex flex-col justify-center items-center">
           <Loader2 className="h-16 w-16 animate-spin text-white mb-4" />
           <p className="text-white text-lg">Saving your answer...</p>
         </div>
       )}
-      <div className="flex flex-col my-20 justify-center items-center bg-black rounded-lg p-5">
+
+      {/* Webcam box */}
+      <div className="flex flex-col items-center bg-black rounded-lg p-4 gap-3">
         {webcamEnabled ? (
-          <video 
-            ref={webcamRef} 
-            autoPlay 
-            playsInline 
-            className="w-[200px] h-[200px] object-cover rounded-lg"
+          <video
+            ref={webcamRef}
+            autoPlay
+            playsInline
+            className="w-full max-w-[280px] h-[180px] object-cover rounded-lg"
           />
         ) : (
-          <div className="w-[200px] h-[200px] flex justify-center items-center bg-gray-200 rounded-lg">
-            <p className="text-gray-500">Webcam Disabled</p>
+          <div className="w-full max-w-[280px] h-[180px] flex justify-center items-center bg-gray-800 rounded-lg">
+            <p className="text-gray-400 text-sm">Webcam Disabled</p>
           </div>
         )}
-        
-        <Button 
-          variant="outline" 
-          className="mt-4"
+
+        <Button
+          variant="outline"
+          size="sm"
           onClick={webcamEnabled ? DisableWebcam : EnableWebcam}
+          className="w-full max-w-[280px]"
         >
           {webcamEnabled ? (
-            <>
-              <CameraOff className="mr-2 h-4 w-4" /> Disable Webcam
-            </>
+            <><CameraOff className="mr-2 h-4 w-4" /> Disable Webcam</>
           ) : (
-            <>
-              <Camera className="mr-2 h-4 w-4" /> Enable Webcam
-            </>
+            <><Camera className="mr-2 h-4 w-4" /> Enable Webcam</>
           )}
         </Button>
       </div>
 
+      {/* Record button */}
       <Button
         disabled={loading}
         variant="outline"
-        className="my-10"
         onClick={StartStopRecording}
+        className="w-full"
       >
         {isRecording ? (
-          <h2 className="text-red-600 items-center animate-pulse flex gap-2">
-            <StopCircle /> Stop Recording
-          </h2>
+          <span className="text-red-600 flex items-center gap-2 animate-pulse">
+            <StopCircle className="h-4 w-4" /> Stop Recording
+          </span>
         ) : (
-          <h2 className="text-primary flex gap-2 items-center">
-            <Mic /> Record Answer
-          </h2>
+          <span className="flex items-center gap-2">
+            <Mic className="h-4 w-4" /> Record Answer
+          </span>
         )}
       </Button>
 
+      {/* Answer textarea */}
       <textarea
-        className="w-full h-32 p-4 mt-4 border rounded-md text-gray-800"
+        className="w-full h-28 p-3 border rounded-md text-sm text-gray-800 resize-none"
         placeholder="Your answer will appear here..."
         value={userAnswer}
         onChange={(e) => setUserAnswer(e.target.value)}
       />
-    
+
+      {/* Save button */}
       <Button
-        className="mt-4"
         onClick={UpdateUserAnswer}
         disabled={loading || !userAnswer.trim()}
+        className="w-full"
       >
         {loading ? (
           <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>

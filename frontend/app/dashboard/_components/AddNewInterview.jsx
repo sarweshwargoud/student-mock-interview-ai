@@ -43,6 +43,8 @@ const TECH_STACK_SUGGESTIONS = {
   'UI/UX Designer': 'Figma, Sketch, Adobe XD, InVision'
 };
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 function AddNewInterview() {
   const [openDialog, setOpenDialog] = useState(false);
   const [jobPosition, setJobPosition] = useState("");
@@ -67,7 +69,7 @@ function AddNewInterview() {
     setLoading(true);
   
     try {
-      const response = await fetch("http://localhost:8000/api/interviews", {
+      const response = await fetch(`${API_URL}/api/interviews`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
