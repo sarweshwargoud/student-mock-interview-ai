@@ -69,7 +69,7 @@ const RecordAnswerSection = ({
       try {
         recognitionRef.current.start();
         setIsRecording(true);
-        toast.info("Listening... speak your answer.");
+        toast.info("Listening... speak your answer clearly.");
       } catch (err) {
         console.error("Start recording error:", err);
       }
@@ -119,23 +119,23 @@ const RecordAnswerSection = ({
   };
 
   return (
-    <div className="flex flex-col gap-2 p-2 mt-1">
+    <div className="p-6 border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 shadow-sm flex flex-col gap-4 h-full">
       {/* Full-screen loading overlay */}
       {loading && (
         <div className="fixed inset-0 bg-black/70 z-[9999] flex flex-col justify-center items-center">
           <Loader2 className="h-14 w-14 animate-spin text-white mb-3" />
-          <p className="text-white text-base font-medium">Evaluating and saving your answer...</p>
+          <p className="text-white text-base font-semibold">Evaluating and saving your answer...</p>
         </div>
       )}
 
-      {/* Compact Webcam Card */}
-      <div className="flex flex-col items-center bg-slate-950 border border-slate-800 rounded-lg p-2 gap-2 shadow-inner">
+      {/* Centered Sleek Webcam Card */}
+      <div className="flex flex-col items-center justify-center bg-slate-950 border border-slate-800 rounded-xl p-3 shadow-inner">
         {webcamEnabled ? (
-          <div className="relative w-[180px] h-[110px] rounded-md overflow-hidden bg-black flex items-center justify-center">
+          <div className="relative w-[240px] h-[135px] rounded-lg overflow-hidden bg-black flex items-center justify-center shadow-md">
             <Webcam
               audio={false}
               mirrored={true}
-              className="w-full h-full object-cover rounded-md"
+              className="w-full h-full object-cover rounded-lg"
               onUserMediaError={(err) => {
                 console.error("Webcam error:", err);
                 toast.error("Could not access webcam.");
@@ -144,21 +144,23 @@ const RecordAnswerSection = ({
             />
           </div>
         ) : (
-          <div className="w-[180px] h-[70px] flex flex-col justify-center items-center bg-slate-900/60 border border-slate-800 rounded-md text-center p-1">
-            <CameraOff className="h-5 w-5 text-slate-500 mb-0.5" />
-            <p className="text-slate-400 text-[11px] font-medium">Webcam Disabled</p>
+          <div className="w-[240px] h-[80px] flex flex-col justify-center items-center bg-slate-900 border border-slate-800 rounded-lg text-center p-2">
+            <CameraOff className="h-5 w-5 text-slate-400 mb-1" />
+            <p className="text-slate-300 text-xs font-bold">Webcam Disabled</p>
+            <p className="text-slate-400 text-[11px]">Enable to practice real interview posture</p>
           </div>
         )}
 
         <Button
+          type="button"
           variant="outline"
           size="sm"
           onClick={() => setWebcamEnabled((prev) => !prev)}
-          className="h-7 px-3 text-xs bg-slate-900 hover:bg-slate-800 border-slate-700 text-slate-200"
+          className="mt-2.5 h-7 px-3.5 text-xs font-semibold bg-slate-900 hover:bg-slate-800 border-slate-700 text-slate-100 transition-colors"
         >
           {webcamEnabled ? (
             <>
-              <CameraOff className="mr-1.5 h-3.5 w-3.5 text-red-400" /> Disable Webcam
+              <CameraOff className="mr-1.5 h-3.5 w-3.5 text-rose-400" /> Disable Webcam
             </>
           ) : (
             <>
@@ -170,57 +172,63 @@ const RecordAnswerSection = ({
 
       {/* Speech-to-text recording button */}
       <Button
+        type="button"
         disabled={loading}
         variant="outline"
-        size="sm"
         onClick={StartStopRecording}
-        className="w-full h-8 border-indigo-500/30 hover:bg-indigo-50/10 text-xs font-semibold"
+        className={`w-full h-10 text-xs sm:text-sm font-bold rounded-xl transition-all border ${
+          isRecording
+            ? "border-rose-500 bg-rose-500/10 text-rose-600 hover:bg-rose-500/20 animate-pulse"
+            : "border-indigo-500/40 text-indigo-700 dark:text-indigo-300 bg-indigo-50/50 dark:bg-indigo-950/40 hover:bg-indigo-100"
+        }`}
       >
         {isRecording ? (
-          <span className="text-red-500 flex items-center justify-center gap-1.5 animate-pulse">
-            <StopCircle className="h-3.5 w-3.5" /> Stop Recording
+          <span className="flex items-center justify-center gap-2">
+            <StopCircle className="h-4 w-4 text-rose-600" /> Stop Recording
           </span>
         ) : (
-          <span className="flex items-center justify-center gap-1.5 text-indigo-400 hover:text-indigo-300">
-            <Mic className="h-3.5 w-3.5" /> Record Answer with Speech
+          <span className="flex items-center justify-center gap-2">
+            <Mic className="h-4 w-4 text-indigo-600 dark:text-indigo-400" /> Record Answer with Speech
           </span>
         )}
       </Button>
 
-      {/* Compact Answer textarea */}
-      <div>
+      {/* Answer textarea */}
+      <div className="flex-1 min-h-[85px]">
         <textarea
-          className="w-full h-20 p-2.5 border rounded-md text-xs text-foreground bg-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none leading-relaxed"
-          placeholder="Your answer will appear here via speech or type directly..."
+          className="w-full h-full min-h-[85px] p-3 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-slate-950/50 focus:bg-white dark:focus:bg-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 resize-none leading-relaxed"
+          placeholder="Your answer will appear here automatically as you speak, or you can type directly..."
           value={userAnswer}
           onChange={(e) => setUserAnswer(e.target.value)}
         />
       </div>
 
-      {/* Save button */}
+      {/* Save Answer Button */}
       <Button
+        type="button"
         onClick={UpdateUserAnswer}
         disabled={loading || !userAnswer.trim()}
-        size="sm"
-        className="w-full h-8 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs flex items-center justify-center gap-1.5 shadow-sm"
+        className="w-full h-10 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-md shadow-indigo-600/25 transition-all"
       >
         {loading ? (
           <>
-            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> Saving…
+            <Loader2 className="h-4 w-4 animate-spin" /> Evaluating Answer…
           </>
         ) : (
           <>
-            <CheckCircle2 className="h-3.5 w-3.5" /> Save Answer for Evaluation
+            <CheckCircle2 className="h-4 w-4" /> Save Answer for Evaluation
           </>
         )}
       </Button>
 
-      {/* Note box visible on the same screen */}
-      <div className="p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg flex items-center gap-2 text-[11px] text-amber-300 leading-snug">
-        <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-        <div>
-          <span className="font-bold text-amber-200">Note:</span> Click{" "}
-          <strong className="text-white underline">Save Answer for Evaluation</strong> for each question so AI evaluates your answers.
+      {/* Ultra High-Contrast Alert Box */}
+      <div className="p-3.5 bg-amber-50 dark:bg-amber-950/60 border-2 border-amber-300 dark:border-amber-700 rounded-xl flex items-start gap-3 shadow-sm">
+        <AlertCircle className="w-5 h-5 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
+        <div className="text-xs leading-relaxed text-slate-900 dark:text-slate-100 font-medium">
+          <span className="font-extrabold text-amber-950 dark:text-amber-300 uppercase tracking-wider text-[11px] block mb-0.5">
+            Important Note:
+          </span>
+          Click <strong className="font-extrabold underline text-amber-950 dark:text-amber-200">Save Answer for Evaluation</strong> for each question so our AI can evaluate your response and generate your feedback report.
         </div>
       </div>
     </div>
