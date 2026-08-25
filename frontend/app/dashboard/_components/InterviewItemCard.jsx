@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Trash } from "lucide-react";
 import { toast } from "sonner";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 const InterviewItemCard = ({ interview }) => {
   const router = useRouter();

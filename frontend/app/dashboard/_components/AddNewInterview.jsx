@@ -51,9 +51,7 @@ const TECH_STACK_SUGGESTIONS = {
 };
 
 const MAX_FILE_MB = 5;
-const ACCEPTED_TYPES = [".pdf", ".docx"];
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 // ── Difficulty selector (shared between both tabs) ─────────────────────────
 
@@ -157,7 +155,7 @@ function AddNewInterview() {
           jobDesc: jobDescription,
           jobExperience,
           difficulty,
-          userEmail: user?.primaryEmailAddress?.emailAddress,
+          userEmail: user?.primaryEmailAddress?.emailAddress || "",
         }),
       });
 
@@ -166,13 +164,14 @@ function AddNewInterview() {
         toast.success("Interview questions generated successfully!");
         setOpenDialog(false);
         resetDialog();
-        router.push(`dashboard/interview/${res.mockId}`);
+        router.push(`/dashboard/interview/${res.mockId}`);
       } else {
-        throw new Error("Failed to generate questions");
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || err.detail || "Failed to generate questions");
       }
     } catch (error) {
       console.error("Error generating interview:", error);
-      toast.error("Failed to generate interview questions.");
+      toast.error(error.message || "Failed to generate interview questions.");
     } finally {
       setLoading(false);
     }
@@ -191,7 +190,7 @@ function AddNewInterview() {
     try {
       const formData = new FormData();
       formData.append("file", resumeFile);
-      formData.append("userEmail", user?.primaryEmailAddress?.emailAddress ?? "");
+      formData.append("userEmail", user?.primaryEmailAddress?.emailAddress || "");
       formData.append("difficulty", resumeDifficulty);
 
       const response = await fetch(`${API_URL}/api/interviews/from-resume`, {
@@ -204,10 +203,10 @@ function AddNewInterview() {
         toast.success("Resume analysed — interview ready!");
         setOpenDialog(false);
         resetDialog();
-        router.push(`dashboard/interview/${res.mockId}`);
+        router.push(`/dashboard/interview/${res.mockId}`);
       } else {
         const err = await response.json().catch(() => ({}));
-        throw new Error(err.detail || "Failed to process resume.");
+        throw new Error(err.detail || err.error || "Failed to process resume.");
       }
     } catch (error) {
       console.error("Resume upload error:", error);
@@ -375,7 +374,10 @@ function AddNewInterview() {
                   {/* Drop zone */}
                   {!resumeFile ? (
                     <div
-                      onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setIsDragging(true);
+                      }}
                       onDragLeave={() => setIsDragging(false)}
                       onDrop={handleDrop}
                       onClick={() => fileInputRef.current?.click()}
