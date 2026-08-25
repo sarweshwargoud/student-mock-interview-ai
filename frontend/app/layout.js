@@ -4,6 +4,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from "@/components/ui/sonner";
 import Footer from "./dashboard/_components/Footer";
 import Header from "./dashboard/_components/Header";
+import { Analytics } from "@vercel/analytics/react";
 import { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types';
 
 const geistSans = localFont({
@@ -133,6 +134,7 @@ export default function RootLayout({ children }) {
           </main>
           
           <Footer />
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
