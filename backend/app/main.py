@@ -1,11 +1,14 @@
+import io
 import json
 import uuid
 from datetime import datetime
 from typing import Optional, List
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import google.generativeai as genai
+import fitz  # PyMuPDF
+import docx  # python-docx
 from .config import settings
 from .database import get_db, engine, Base
 from . import models, schemas
@@ -156,3 +159,126 @@ def delete_interview(mockId: str, db: Session = Depends(get_db)):
     db.delete(interview)
     db.commit()
     return {"message": "Interview deleted successfully"}
+
+
+# ── Resume helpers ─────────────────────────────────────────────────────────
+
+def extract_text_from_pdf(file_bytes: bytes) -> str:
+    """Extract plain text from a PDF using PyMuPDF."""
+    doc = fitz.open(stream=file_bytes, filetype="pdf")
+    pages = [page.get_text() for page in doc]
+    return "\n".join(pages).strip()
+
+
+def extract_text_from_docx(file_bytes: bytes) -> str:
+    """Extract plain text from a DOCX using python-docx."""
+    document = docx.Document(io.BytesIO(file_bytes))
+    paragraphs = [p.text for p in document.paragraphs if p.text.strip()]
+    return "\n".join(paragraphs).strip()
+
+
+# ── Resume-based interview endpoint ───────────────────────────────────────
+
+@app.post("/api/interviews/from-resume", response_model=schemas.InterviewResponse)
+async def create_interview_from_resume(
+    file: UploadFile = File(...),
+    userEmail: str = Form(...),
+    difficulty: str = Form("Medium"),
+    db: Session = Depends(get_db),
+):
+    """
+    Accept a PDF or DOCX resume, extract its text, and generate 5 personalised
+    interview questions using Gemini.  The resulting MockInterview is stored
+    exactly like a manually created one.
+    """
+    # ── 1. Validate file type ─────────────────────────────────────────────
+    filename = file.filename or ""
+    if not (filename.lower().endswith(".pdf") or filename.lower().endswith(".docx")):
+        raise HTTPException(
+            status_code=400,
+            detail="Only PDF and DOCX files are supported."
+        )
+
+    file_bytes = await file.read()
+
+    # ── 2. Extract text ───────────────────────────────────────────────────
+    try:
+        if filename.lower().endswith(".pdf"):
+            resume_text = extract_text_from_pdf(file_bytes)
+        else:
+            resume_text = extract_text_from_docx(file_bytes)
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Could not read the uploaded file: {str(e)}"
+        )
+
+    if not resume_text:
+        raise HTTPException(
+            status_code=400,
+            detail="The uploaded file appears to be empty or unreadable."
+        )
+
+    # ── 3. Ask Gemini to parse the resume AND generate questions ──────────
+    prompt = (
+        "You are an expert technical interviewer. "
+        "Below is the full text of a candidate's resume:\n\n"
+        f"{resume_text[:6000]}\n\n"  # cap at ~6 000 chars to stay within token limits
+        f"Difficulty level requested: {difficulty}\n\n"
+        "Do the following:\n"
+        "1. Identify the candidate's primary job role/position.\n"
+        "2. Identify their main tech stack / skills.\n"
+        "3. Estimate their years of experience.\n"
+        "4. Generate exactly 5 interview questions and model answers tailored to this specific resume.\n\n"
+        "Respond ONLY with a valid JSON object in this exact format (no markdown, no extra text):\n"
+        "{\n"
+        '  "jobPosition": "<detected role>",\n'
+        '  "jobDesc": "<comma-separated key skills>",\n'
+        '  "jobExperience": "<estimated years as a number string>",\n'
+        '  "questions": [\n'
+        '    { "question": "...", "answer": "..." },\n'
+        "    ...\n"
+        "  ]\n"
+        "}"
+    )
+
+    try:
+        response = gemini_model.generate_content(prompt)
+        cleaned = clean_json_response(response.text)
+        parsed = json.loads(cleaned)
+    except json.JSONDecodeError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Gemini returned invalid JSON: {str(e)}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error calling Gemini: {str(e)}"
+        )
+
+    # ── 4. Validate parsed structure ──────────────────────────────────────
+    questions = parsed.get("questions", [])
+    if not questions:
+        raise HTTPException(
+            status_code=500,
+            detail="Gemini did not return any questions. Please try again."
+        )
+
+    # ── 5. Save to DB ─────────────────────────────────────────────────────
+    mock_id = str(uuid.uuid4())
+    db_interview = models.MockInterview(
+        mockId=mock_id,
+        jsonMockResp=json.dumps(questions),
+        jobPosition=parsed.get("jobPosition", "Resume-based Interview"),
+        jobDesc=parsed.get("jobDesc", "Extracted from resume"),
+        jobExperience=parsed.get("jobExperience", "0"),
+        createdBy=userEmail,
+        createdAt=datetime.now().strftime("%d-%m-%Y"),
+    )
+
+    db.add(db_interview)
+    db.commit()
+    db.refresh(db_interview)
+    return db_interview
+
