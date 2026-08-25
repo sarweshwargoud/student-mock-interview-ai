@@ -11,12 +11,12 @@ const Footer = () => {
           <span>{new Date().getFullYear()} Interview Guru. Created by Sarweshwar Buddolla. All Rights Reserved.</span>
         </div>
 
-       
+
 
         {/* Social Media Links */}
         <div className="flex space-x-4">
           <a
-            href="https://github.com/student-ai-interview"
+            href="https://github.com/sarweshwargoud/student-mock-interview-ai"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-indigo-500 transition-colors"
@@ -25,7 +25,7 @@ const Footer = () => {
             <Github className="h-6 w-6" />
           </a>
           <a
-            href="https://linkedin.com/company/student-ai-interview"
+            href="https://www.linkedin.com/in/sarweshwar-buddolla-25673b312/"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-indigo-500 transition-colors"
@@ -34,7 +34,7 @@ const Footer = () => {
             <Linkedin className="h-6 w-6" />
           </a>
           <a
-            href="https://twitter.com/student_ai_int"
+            href="https://x.com/sarweshwar_445"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-indigo-500 transition-colors"
