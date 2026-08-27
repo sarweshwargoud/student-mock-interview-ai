@@ -1,4 +1,4 @@
-# Root Git Ignore
+﻿# Root Git Ignore
 
 # Python virtual environments & build files
 backend/venv/
@@ -7,9 +7,17 @@ backend/__pycache__/
 backend/app/__pycache__/
 *.pyc
 
+# Environment files
+.env
+.env*.local
+frontend/.env
+frontend/.env*.local
+backend/.env
+
 # Next.js and Node build folders
 frontend/node_modules/
 frontend/.next/
-frontend/.env*.local
 .next/
 node_modules/
+dist/
+build/

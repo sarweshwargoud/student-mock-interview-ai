@@ -34,7 +34,9 @@
     "react-hook-speech-to-text": "^0.8.0",
     "react-icons": "^5.4.0",
     "react-webcam": "^7.2.0",
+    "resend": "^6.24.0",
     "sonner": "^1.7.0",
+    "svix": "^2.1.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.0.3"
